@@ -1,0 +1,224 @@
+---
+title: "Taller_Rmarkdown_06/10/2022"
+author: "Curso Introducción 2022"
+date: "`r Sys.Date()`"
+output: html_document
+#output: 
+ # prettydoc::html_pretty:
+  #  theme: architect
+   # highlight: github
+#prettydoc crea nuevos temas para las presentaciones
+#Esto es el YAM y son las especificaciones del documento, es lenguaje Rmarkdown, es diferente a R. Esta sección contiene las instrucciones tecnicas, como estilo, titulo, autor, fecha y demás.
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) #Estos espacios grices son chunks y aqui es donde se ejecuta R, osea aqui adentro se sitúan los codigos. Es importante entender que dentro de cada chunk se debe escribir como si estuvieramos dentro del script, es decir, si necesitamos una libreria que no está predeterminada en R (por ejemplo ggplot) es necesario llamarla con la función library(). 
+```
+
+# **TITULOS**
+
+# R Markdown (1 numeral)
+
+## R Markdown (2 numerales)
+
+### R Markdown (3 numerales)
+
+#### R Markdown (4 numerales)
+
+##### R Markdown (5 numerales)
+
+# **INCLUSIÓN DE ENLACES**
+<http://rmarkdown.rstudio.com>. (Para que los enlaces aparezcan tal cual es necesario encerrarlo en '\<\>')
+
+[ggplot](https://rpubs.com/daniballari/ggplot) (Para que quede una palabra enlazada a una liga particular es necesario usar ``[]()``, de manera que la sintaxis sería ``[Palabra](liga)``)
+
+# **ESTILOS DE LETRA**
+**negrita**
+
+*italica*
+
+***negrita e italica***
+
+Tambien pueden usarse _ en vez de *
+
+__negrita__
+
+_italica_
+
+___negrita e italica___
+
+
+# **EJERCICIO DE CLASE**
+
+## Para el lunes, el documento de nuestros proyectos de tesis en varios formatos (html, pdf, word, presentación), incluir imágenes del área de estudio e incluir una tabla y gráficos 
+
+<!-- con esto genero comentarios -->
+
+
+## **INCLUSIÓN DE PLOTS**
+
+Así podemos incluir plots, incluso plots de ggplot
+
+```{r Plots}
+#plot sencillo de R
+plot(pressure)
+```
+
+```{r}
+#incluir gggplot
+library(ggplot2) 
+data("ChickWeight")
+ggplot(ChickWeight, aes(x= Time, y= weight))+
+  geom_point(aes(color=Diet))+
+  geom_line(aes(color=Diet, group=Chick)) +
+  facet_wrap(~Diet)
+```
+
+
+## **INCLUIR FIGURAS**
+
+<!-- PARA INGRESAR UN CHUNK QUE EJECUTE UN COMANDO DE R, ARRIBA EN C+ Y LE DAMOS EN R
+
+echo=FALSE solo muestra la salida del codigo.
+Para acceder a la configuración del código de R. Entonces, en en engranaje del extremo superior derecho del chunck, le damos en output y ahi definimos qué configuración le queremos poner
+
+fig.align='center' alinea la imagen al centro
+fig.cap="leyenda" le otorga una leyenda a la imagen
+esto se ubica entre los { } del inicio del chunk
+
+NOTA!= Usar "" y '' es lo mismo. No confundir con `` 
+-->
+
+```{r echo=FALSE, fig.align='center', fig.cap='leyenda'}
+#para incluir imagenes
+knitr::include_graphics("figura 1.png") #se debe especificar el directorio, pero como estamos dentro de un proyecto, entonces simplemente se nombra la imagen, si no, entonces sería, por ejemplo "C:\Users\Mauricio Diaz\Documents\Maestria\2022 - 1\Introducción\Mandrujano" NOTA!: cuidado porque los \ deben ser en la dirección contraria: / (la de la tecla 7)
+
+```
+
+![](figura%201.png) <!-- Para incluir imagenes pero haciéndolo dentro del texto se hace asi:
+[](figura 1.png)
+Nota!: obviamente si la imagen no esta en la carpeta raiz, deben especificar en "figura.png" la ruta tal como esta en el comentario
+
+-->
+
+<!-- Clase 06/10/2022
+
+los addins son complementos para Rmarkdown. El remedy es un conjunto de ayudas, por ejemplo, si le damos H1, nos incluye un # en el codigo y se genera un titulo tipo 1, y si ponemos H2, nos incluye ## generando un titulo tipo 2. Tambien nos permite agregar chunks, incrustar imágenes, url, codigos en LaTex, etc... Esto nos ayuda a escribir de una manera más fluída nuestro texto dentro de Rmarkdown
+-->
+
+## **AGREGAR TABLAS**
+
+    |  *a*|  *b*|  *c*| <!-- Estos textos funcionan como cualquier texto de Rmarkdown-->
+    |--:|--:|--:|
+    |  1|  2|  3|
+    |  2|  3|  4|
+
+Y se ve de la siguiente manera
+
+| *a* | *b* | *c* |
+|----:|----:|----:|
+|   1 |   2 |   3 |
+|   2 |   3 |   4 |
+
+---
+Hay unos paquetes muy buenos para insertar tablas como kable o DT, sin embargo son un poco más complejos de utilizar. Pero siempre se puedeb buscar las ayudas desde la consola con:
+
+```{r eval=FALSE, include=FALSE}
+?kable
+?DT
+```
+
+O bien, pueden buscar en google como usarlo. Lo bueno de R es que tiene un montón de foros, blogs y paginas de personas que han tenido las mismas dudas y en la mayoría de los casos tambien las soluciones, por ejemplo.
+
+- [ggplot](https://rpubs.com/daniballari/ggplot)
+- [kable](https://bookdown.org/yihui/rmarkdown-cookbook/kable.html)
+- [DT](https://rstudio.github.io/DT/)
+
+# **INCLUSIÓN DE BIBLIOGRAFÍA**
+<!-- -->
+
+Para R las citas deben ser desargadas en formatos Bibtext. El formato bibtext es una herramienta que describe y procesa listas de referencias, mayoritariamente en conjunto con documento de naturaleza LaTeX.
+
+La bibliografía en este formato puede hacerse a través de:
+
+1. Si es un paquete R tambien nos permite saber cual es la referencia de los paquetes que vamos a usar, por ejemplo:
+
+```{r}
+citation("ggplot2")
+```
+
+
+
+2. Buscar el articulo en googlescholar y darle BibText uno a uno
+
+3. Usar programas de ayuda de citas como Mendeley para obtener la lista de citas en un archivo .bib y en formato bibtext
+
+
+Ahora para obtener el formato particular de como cita una revista y podamos citar correctamente (Sea APA, Hardvard, chicago, etc) entramos a <https://editor.citationstyles.org/searchByName/>. y luego
+
+- En el cuadro de buscar, podemos buscar cualquier revista y luego de elegir el formato de la revista. esto es basicamente para elegir la plantilla de la revista y la forma en que ellos organizan la información y la citación. 
+
+- Le damos install y aparece un recuadro en el que se descargan los estilos de la revista que elegimos.
+
+- Una vez descargado, lo guardamos en la carpeta donde se encuentra el proyecto de R en el que estemos trabajando
+
+- ahora, en el documento que vayamos a trabajar, debemos hacer una modificación del YAM, de la siguiente manera
+
+
+```
+fontsize: 12pt #tamaño de letra
+header-includes: \usepackage[spanish]{babel}
+linestretch: 1.5
+link-citations: yes
+lof: yes
+lot: yes
+biblio-style: "apalike-es" #APA en formato en español
+toc: yes
+toc_depth: 3
+csl: journal-of-field-ornithology.csl #este fue el archivo que descargamos y posee el formato y estilo de citas particular de la revista que queremos
+bibliography: biblioteca.bib #es el "repositorio" de las referencias en formato bib, las citas deben estar en este lugar en formato bibtext
+
+```
+
+## introducir la cita
+
+- una vez obtenido el formato tipo BibTex, por ejemplo,
+
+```
+@incollection{bezaury2010,
+ title={Las selvas secas del Pac{\'i}fico Mexicano en el contexto mundial},
+ author={Bezaury-Creel, J},
+ pages= {21--31},
+ booktitle= {Diversidad, amenazas y áreas prioritarias para la conservación de las Selvas Secas del Pacífico de México},
+ publisher={Fondo de Cultura Econ{\'o}mica Ciudad de M{\'e}xico},
+ year={2010},
+ editor = {Ceballos, Gerardo and Martínez, Lourdes and Espinoza, Eduardo and Bezaury-Creel, Juan and Dirzo, Rodolfo},
+ address = {M{\'e}xico}
+```
+
+- Y queremos citar dentro del texto, entonces, ponemos ``[@bezaury2010]`` de manera que luego del ``@`` vaya el texto que está después del primer ``{`` de la primera linea de la cita en formato bib
+
+- Al compliar esto
+
+```
+Texto con alguna información [@bezaury2010]
+```
+
+  Obtendremos
+  
+```
+Texto con alguna información (Bezaury-Creel 2010)
+
+Bezaury-Creel, J. 2010. Las selvas secas del pacífico mexicano en el contexto mundial. In Diversidad, amenazas y áreas prioritarias para la conservación de las selvas secas del pacífico de méxico (G. Ceballos, L. Martínez, E. Espinoza, J. Bezaury-Creel & R. Dirzo, eds.), pp. 21–31. Fondo de Cultura Económica Ciudad de México, México.
+
+```
+
+**NOTA:** Es importante que esta introducción de las citas se haga en el documento en el que tenga esas modificaciones en el YAM. si lo hacen en este documento no van a obtener el resultado que quieren. Tambien, el archivo ``.bib`` que estamos trabajando es el de "biblioteca", sin embargo, debemos tener nuestro propio "repositorio de citas" para obtener el resultado para cada actividad.
+
+
+
+
+
+
+
+

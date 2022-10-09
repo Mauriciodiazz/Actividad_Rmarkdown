@@ -1,0 +1,90 @@
+---
+title: "Evaluación de áreas de conservación (AICA-ANP) respecto a la distribución de especies de aves endémicas y su afectación por presiones antrópicas"
+subtitle: "⚔<br/>con xaringan"
+author: "Mauricio Díaz"
+institute: "INECOL"
+date: "2016/12/12 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["metropolis-fonts", "metropolis"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, center, middle
+
+# Introducción
+---
+
+Los rápidos cambios de uso de suelo y cobertura vegetales naturales preocupa cada vez más (Amelung & Diehl, 1992), por ejemplo, sólo en el trópico y neotrópico, las tasas de deforestación ha alcanzado niveles alarmantes (Global Forest Watch, 2021). Una causa de este fenómeno es debido al incremento de la densidad poblacional y las altas demandas de recursos naturales (Grainger, 2013). Se ha encontrado que los asentamientos humanos responden a la forma y perfil de la tierra, de manera que el aumento de las poblaciones están relacionados negativamente con el incremento en la pendiente del terreno (Lung et al., 2013), esto indica que en general se han establecido en zonas de poca pendiente. Por ejemplo, Barbier y Burgess (1996) realizaron un análisis sobre los impactos sobre la perturbación a las coberturas y encontraron una relación positiva entre la densidad poblacional y la presencia de sistemas ganaderos, que tambien responden a variables del terreno, siendo las áreas de menor pendiente las mas usadas para estas prácticas (Cook, 1966). Así mismo, estas presiones antrópicas inciden en la permanencia de coberturas naturales en el paisaje (Basnet, 1992) que a su vez afectan las distribuciones de las especies (Falcucci et al., 2007).
+
+---
+class: inverse, center, middle
+
+# Metodología
+
+---
+### Área de estudio
+
+![Figura 1. Mapa de méxico](https://upload.wikimedia.org/wikipedia/commons/5/5f/Mexico_blank.svg)
+
+---
+### Área de estudio
+Área de estudio: debido a que se va a trabajar con las especies de aves endémicas de México, se va a considerar todo el territorio del país. Pero cabe destacar que los accidentes topográficos más sobresalientes por poseer valores mayores de pendientes son principalmente las tres cadenas montañosas (la Sierra Madre Occidental, la Sierra Madre Oriental y el Eje Volcánico Transmexicano). Estas contrastan con aquellas regiones con los menores valores como  las depresiones e Istmos (Balsas y Tehuantepec respectivamente), la gran meseta central mexicana, las planicies costeras (Pacífico y Golfo) principalmente. Lo anterior constituye un rango de elevación que va desde el nivel del mar hasta 5610 m. s.n.m., esto está ligado a los diferentes tipos de ecosistemas y climas que van desde cálidos hasta fríos alpinos, pasando por climas áridos de las zonas desérticas del norte del territorio.
+
+---
+### Correlación entre la pendiente y la modificación
+
+```{r echo=FALSE}
+datos<- data.frame(matrix(ncol= 2, nrow=10))
+names(datos)<- c("Pendiente", "Afectacion")
+datos$Pendiente<- seq(from=0, to=0.9, by=0.1)
+datos$Afectacion<- (1/10^(seq(-4,0,0.2))[1:10])
+
+library(ggplot2)
+
+ggplot(data=datos, aes(x= Afectacion, y=Pendiente))+
+  geom_point()
+
+```
+
+---
+### Correlación entre la pendiente y la modificación
+Para estimar la perturbación se realizará un índice sobre la tasa de deforestación a través del tiempo y su relación con la pendiente. Entendiendo que la pendiente del terreno es la tasa de cambio de la elevación en dirección al flujo de agua y es medida en porcentajes, de esta manera, si una celda corresponde a 10% de pendiente significa que un desplazamiento vertical de 10 metros corresponde a 100 metros de avance en dirección horizontal, así pues, porcentajes más altos representan pendientes más pronunciadas. Se usarán seis series de uso de cobertura y vegetación INEGI y la capa de vegetación original mexicana de CONABIO cuando el país presentaba su vegetación original conservada, ambas obtenidas del Geoportal del Sistema Nacional de Información Sobre Biodiversidad (SNIB; <http://www.conabio.gob.mx/informacion/gis/>). 
+
+---
+### Registros biológicos
+```{r echo=FALSE, tidy=FALSE}
+tabla<- read.table("Especies.txt", sep="\t", header=T)
+DT::datatable(
+    head(tabla, 5),
+  fillContainer = F, options = list(pageLength = 5)
+)
+```
+---
+### Modelos de Distribución de especies
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(sf) #cargar paquetería de manejo de shapefiles
+dist<- read_sf("./ejemplares-snib-melanerpes-chrysogenys/ejemplares-snib-melanerpes-chrysogenys.shp") #creo objeto con las distribuciones
+
+library(rnaturalearth) #cargo paqueterias de paises
+library(rnaturalearthdata)
+
+world <- ne_countries(scale = "medium", returnclass = "sf") #objeto con paises
+library(ggplot2) #paqueteria de graficos
+
+ggplot(data = world[140,]) +
+  geom_sf() +
+  geom_point(data=dist, aes(x=lon, y=lat2), size= 2, fill= "#1F862D", alpha=I(0.2))
+```
+---
+### Modelos de Distribución de especies
+Variables ambientales: Para caracterizar los nichos ecológicos de las especies y generar los MDE, se utilizarán variables climáticas que se obtendrán de la base de datos de variables bioclimáticas WorldClim (<https://www.worldclim.org>) que posee información disponible de 19 variables a una resolución de 0.0083° (~1 km2). 
+
+
+---
+class: inverse, center, middle
+
+# Gracias!!!

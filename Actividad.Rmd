@@ -1,0 +1,91 @@
+---
+title: "Evaluación de áreas de conservación (AICA-ANP) respecto a la distribución de especies de aves endémicas y su afectación por presiones antrópicas"
+author: "Mauricio Diaz-Vallejo"
+date: "`r Sys.Date()`"
+output: html_document
+#output: pdf_document
+#output: word_document
+fontsize: 12pt #tamaño de letra
+header-includes: \usepackage[spanish]{babel}
+linestretch: 1.5
+link-citations: yes
+lof: yes
+lot: yes
+biblio-style: "apalike-es" #APA en formato en español
+toc: yes
+toc_depth: 3
+csl: journal-of-field-ornithology.csl #este fue el archivo que descargamos y posee el formato y estilo de citas particular de la revista que queremos
+bibliography: referencias_msc.bib #es el "repositorio" de las referencias en formato bib, las citas deben estar en este lugar en formato bibtext
+---
+
+## Introducción
+
+Los rápidos cambios de uso de suelo y cobertura vegetales naturales preocupa cada vez más [@Amelung1992], por ejemplo, sólo en el trópico y neotrópico, las tasas de deforestación ha alcanzado niveles alarmantes [@GlobalForestWatch2021]. Una causa de este fenómeno es debido al incremento de la densidad poblacional y las altas demandas de recursos naturales [@Grainger2013]. Se ha encontrado que los asentamientos humanos responden a la forma y perfil de la tierra, de manera que el aumento de las poblaciones están relacionados negativamente con el incremento en la pendiente del terreno [@Lung2013], esto indica que en general se han establecido en zonas de poca pendiente. Por ejemplo, Barbier y Burgess (1996) realizaron un análisis sobre los impactos sobre la perturbación a las coberturas y encontraron una relación positiva entre la densidad poblacional y la presencia de sistemas ganaderos, que tambien responden a variables del terreno, siendo las áreas de menor pendiente las mas usadas para estas prácticas [@Caballero-Cruz2020]. Así mismo, estas presiones antrópicas inciden en la permanencia de coberturas naturales en el paisaje [@Basnet1992] que a su vez afectan las distribuciones de las especies [@Giraldes2021].
+
+## Metodología
+
+### Área de estudio
+Área de estudio: debido a que se va a trabajar con las especies de aves endémicas de México, se va a considerar todo el territorio del país. Pero cabe destacar que los accidentes topográficos más sobresalientes por poseer valores mayores de pendientes son principalmente las tres cadenas montañosas (la Sierra Madre Occidental, la Sierra Madre Oriental y el Eje Volcánico Transmexicano). Estas contrastan con aquellas regiones con los menores valores como  las depresiones e Istmos (Balsas y Tehuantepec respectivamente), la gran meseta central mexicana, las planicies costeras (Pacífico y Golfo) principalmente. Lo anterior constituye un rango de elevación que va desde el nivel del mar hasta 5610 m. s.n.m., esto está ligado a los diferentes tipos de ecosistemas y climas que van desde cálidos hasta fríos alpinos, pasando por climas áridos de las zonas desérticas del norte del territorio.
+
+
+![Figura 1. Mapa de méxico](https://upload.wikimedia.org/wikipedia/commons/5/5f/Mexico_blank.svg)
+
+### Correlación entre la pendiente y la modificación
+
+Para estimar la perturbación se realizará un índice sobre la tasa de deforestación a través del tiempo y su relación con la pendiente. Entendiendo que la pendiente del terreno es la tasa de cambio de la elevación en dirección al flujo de agua y es medida en porcentajes, de esta manera, si una celda corresponde a 10% de pendiente significa que un desplazamiento vertical de 10 metros corresponde a 100 metros de avance en dirección horizontal, así pues, porcentajes más altos representan pendientes más pronunciadas. Se usarán seis series de uso de cobertura y vegetación INEGI y la capa de vegetación original mexicana de CONABIO cuando el país presentaba su vegetación original conservada, ambas obtenidas del Geoportal del Sistema Nacional de Información Sobre Biodiversidad (SNIB; <http://www.conabio.gob.mx/informacion/gis/>). La variable de pendiente serán obtenidas de la base de datos desarrollada por Amatulli et al. (2020), quienes desarrollaron un conjunto de variables asociadas la geomorfología del terreno a una resolución de 90 metros. Se seleccionarán las imágenes correspondientes al área de estudio entre las latitudes 14 y 33 norte y las longitudes 118 y 85 oeste, estas imágenes se procesarán y posteriormente cortarán solo al territorio continental mexicano. Para hacer este análisis más simple, se clasificarán todos los tipos de vegetación en dos categorías: 1) conservada y 2) transformada. Posteriormente se convertirá cada capa vectorial de INEGI en un ráster con un tamaño de celda de 30 sec (igual que la capa de pendiente). Se realizará un cambio de análisis de detección entre series y se cuantificará solo la perdida de cobertura y no la ganancia porque la mayor parte de esta está relacionada a procesos de degradación de degradación forestal y su recuperación [@Cuevas2010; @Watson2014]. Luego, se estimará la tendencia de la pérdida de vegetación para cada serie a lo largo del rango de pendiente usando el número de pixeles de porcentaje de pérdida en un análisis de densidad. Finalmente, se agruparán los valores de pendiente en seis clases del mismo intervalo, excepto por las áreas planas, y el estimado del número de pixeles transformados entre series por los valores de pendiente para cada clase usando R 3.5.1.
+
+
+```{r}
+datos<- data.frame(matrix(ncol= 2, nrow=10))
+names(datos)<- c("Pendiente", "Afectacion")
+datos$Pendiente<- seq(from=0, to=0.9, by=0.1)
+datos$Afectacion<- (1/10^(seq(-4,0,0.2))[1:10])
+
+library(ggplot2)
+
+ggplot(data=datos, aes(x= Afectacion, y=Pendiente))+
+  geom_point()
+
+```
+
+
+### Registros biológicos
+
+Los registros de las especies endémicas de México se obtendrán de portales de registros en línea como la Infraestructura Mundial de Información de Biodiversidad (GBIF por sus siglas en inglés), Vertnet, Atlas de las Aves de México, CONABIO, entre otros. La información será curada con el fin de obtener sólo aquellos registros que contengan toda la información geográfica asociada. Así mismo, se corroborarán los registros con el fin de corroborar que sea lógica la ubicación de cada registro. Para asignarle la categoría de endemismo de cada especie, se seguirá la metodología planteada por Navarro-Sigüenza et al. (2014) en donde se determina un taxón endémico si el total de la distribución de ese grupo en un ciclo anual no sobrepasa los límites particularmente determinados que para efectos de este proyecto de tesis constará del territorio mexicano.
+
+```{r}
+especies<- read.table("Especies.txt", sep="\t", header=T)
+
+knitr::kable(especies)
+
+
+```
+
+
+### Modelos de Distribución de especies
+
+Variables ambientales: Para caracterizar los nichos ecológicos de las especies y generar los MDE, se utilizarán variables climáticas que se obtendrán de la base de datos de variables bioclimáticas WorldClim (<https://www.worldclim.org>) que posee información disponible de 19 variables a una resolución de 0.0083° (~1 km2). 
+
+Calibración del modelo. Para estimar la distribución potencial de las especies endémicas, se usará el algoritmo Maxent 3.4.0  [@Phillips2006] que es uno de los más comúnmente utilizados y que genera valores de idoneidad a través de probabilidades que van de 0 a 1. Para optimizar la complejidad de los modelos se seguirá el protocolo de calibración de los modelos utilizando el paquete KUENM (<https://github.com/marlonecobos/kuenm>; [@Watson2014]) en R 3.5.1. El fondo o área de accesibilidad (M; definida como el área a la que la especie probablemente tuvo acceso por dispersión), se establecerá para cada especie modelada, mediante la utilización de las ecorregiones donde al menos exista un punto de presencia. Para cada especie se crearán modelos candidatos construidos bajo combinaciones variables de tipos de respuesta del modelo. Con base en esta información se seleccionarán las combinaciones que muestren un mejor desempeño con base valores de validación como la curva ROC parcial, por tasa de omisión, y valores de AIC corregido AICc. Se crearán modelos finales usando los parámetros seleccionados anteriormente obteniendo la distribución espacial actual de las condiciones idóneas y no idóneas para cada especie modelada. Para ello se aplicará un umbral de omisión de entrenamiento del 5% de los valores probabilísticos generados por Maxent, basado en los datos de presencia utilizados para calibrar los modelos para cada especie [@Peterson2002]. De acuerdo con dicho umbral, los valores menores o iguales a este umbral serán considerados como ausencias y los valores mayores a este umbral se considerarán como presencias. Para el análisis de las pendientes con las áreas de distribución se transformarán las distribuciones en mapas binarios de presencia – ausencia (1 y 0 respectivamente). Posteriormente para cada pixel con valor de 1 (presencia) se extraerá el valor de pendiente asociado, con esta información se realizarán gráficas de densidad que relacionarán las áreas de presencia con los valores de pendiente asociado mediante el conteo de pixeles por valor de pendiente. 
+
+```{r}
+library(sf) #cargar paquetería de manejo de shapefiles
+dist<- read_sf("./ejemplares-snib-melanerpes-chrysogenys/ejemplares-snib-melanerpes-chrysogenys.shp") #creo objeto con las distribuciones
+
+library(rnaturalearth) #cargo paqueterias de paises
+library(rnaturalearthdata)
+
+world <- ne_countries(scale = "medium", returnclass = "sf") #objeto con paises
+class(world) #certifico que este bien
+
+library(ggplot2) #paqueteria de graficos
+
+ggplot(data = world[140,]) +
+  geom_sf() +
+  geom_point(data=dist, aes(x=lon, y=lat2), size= 2, fill= "#1F862D", alpha=I(0.2))
+
+
+```
+
+## Referencias
+
